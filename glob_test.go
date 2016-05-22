@@ -1,4 +1,4 @@
-package pib
+package main
 
 import (
 	"fmt"
@@ -30,7 +30,7 @@ func TestScan4Pictures(t *testing.T) {
 		},
 	}
 	for _, c := range cases {
-		got := PictureScan(c.in, ".png")
+		got := PictureScan(c.in)
 
 		if got == nil && c.want == nil {
 			fmt.Printf("NIL") //return 1

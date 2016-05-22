@@ -1,17 +1,37 @@
-package pib
+package main
 
 import (
+	"flag"
 	"fmt"
 	"github.com/xiam/exif"
+	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
 )
 
 func main() {
-	data, _ := exif.Read("_examples/resources/test.jpg")
-	for key, val := range data.Tags {
-		fmt.Printf("%s = %s\n", key, val)
+	currDir, _ := os.Getwd()
+	inPtr := flag.String("in", currDir,
+		"The path to be scanned recursively.")
+
+	outdir, err := ioutil.TempDir("/tmp", "pid")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	flag.Parse()
+	fmt.Printf("IN: %s\n", *inPtr)
+	fmt.Printf("TMP: %s\n", outdir)
+
+	pics := PictureScan(*inPtr)
+	for _, pic := range pics {
+		fmt.Printf("processing %s\n", pic)
+		data, _ := exif.Read(pic)
+		for key, val := range data.Tags {
+			fmt.Printf("%s = %s\n", key, val)
+		}
 	}
 }
 
@@ -31,7 +51,7 @@ func Extend(slice []string, element string) []string {
 }
 
 func HasSuffix(s string) bool {
-	suffices := [...]string{".png", ".jpg", ".JPG"}
+	suffices := [...]string{".JPG", ".png", ".jpg"}
 	for _, suffix := range suffices {
 		if strings.HasSuffix(s, suffix) {
 			return true
@@ -40,7 +60,7 @@ func HasSuffix(s string) bool {
 	return false
 }
 
-func PictureScan(root string, ext string) []string {
+func PictureScan(root string) []string {
 	pictureSlice := make([]string, 0, 10)
 	filepath.Walk(root, func(path string, _ os.FileInfo, _ error) error {
 		if HasSuffix(path) {
