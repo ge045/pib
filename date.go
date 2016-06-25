@@ -60,7 +60,7 @@ func Extend(slice []string, element string) []string {
 }
 
 func HasSuffix(s string) bool {
-	suffices := [...]string{".JPG", ".png", ".jpg"}
+	suffices := [...]string{".JPG", ".png", ".jpg", ".jpeg", ".JPEG"}
 	for _, suffix := range suffices {
 		if strings.HasSuffix(s, suffix) {
 			return true
