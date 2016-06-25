@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 )
 
 func main() {
@@ -38,10 +39,21 @@ func GetExifDate(pic string) {
 			fmt.Println("Failed to read EXIF data for file ", pic)
 		}
 	}()
+	const format = "2006:01:02 15:04:05"
+	var datetime, current, uninizialized time.Time
+	var final_key string
 	data, _ := exif.Read(pic)
 	for key, val := range data.Tags {
-		fmt.Printf("\t%s = %s\n", key, val)
+		if strings.Contains(key, "Date and Time") {
+			fmt.Printf("\t\t%s %s\n", key, val)
+			current, _ = time.Parse(format, val)
+			if (datetime == uninizialized) || current.Before(datetime) {
+				datetime = current
+				final_key = key
+			}
+		}
 	}
+	fmt.Printf("\t%s = %s\n", final_key, datetime)
 }
 
 func Extend(slice []string, element string) []string {
