@@ -28,10 +28,19 @@ func main() {
 	pics := PictureScan(*inPtr)
 	for _, pic := range pics {
 		fmt.Printf("processing %s\n", pic)
-		data, _ := exif.Read(pic)
-		for key, val := range data.Tags {
-			fmt.Printf("%s = %s\n", key, val)
+		GetExifDate(pic)
+	}
+}
+
+func GetExifDate(pic string) {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("Failed to read EXIF data for file ", pic)
 		}
+	}()
+	data, _ := exif.Read(pic)
+	for key, val := range data.Tags {
+		fmt.Printf("\t%s = %s\n", key, val)
 	}
 }
 
